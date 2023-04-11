@@ -1,10 +1,17 @@
 import 'package:chat_app_mvc/view/home_page.dart';
 import 'package:chat_app_mvc/view/participants_page.dart';
 import 'package:flutter/material.dart';
-
 import 'controller/user_controller.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // Run the app
   runApp(const MyApp());
 }
 
