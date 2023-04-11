@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controller/user_controller.dart';
+import 'widgets/password_text_field.dart';
 
 class MyHomePage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -34,9 +35,7 @@ class MyHomePage extends StatelessWidget {
                   hintText: 'Enter your name',
                   prefixIcon: Icon(Icons.person),
                 ),
-                onChanged: (value) {
-                  name = value;
-                },
+                onChanged: (value) => name = value,
                 validator: (value) {
                   //Regular expression for name with only letters and spaces
                   final RegExp nameRegExp = RegExp(r'^[a-zA-Z ]+$');
@@ -59,9 +58,7 @@ class MyHomePage extends StatelessWidget {
                   hintText: 'Enter your email',
                   prefixIcon: Icon(Icons.email),
                 ),
-                onChanged: (value) {
-                  email = value;
-                },
+                onChanged: (value) => email = value,
                 validator: (value) {
                   if (value == null || value.isEmpty || !value.contains('@')) {
                     return 'Please a valid email';
@@ -70,28 +67,9 @@ class MyHomePage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: true,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: 'Enter your password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.remove_red_eye),
-                    onPressed: () {},
-                  ),
-                ),
-                onChanged: (value) {
+              PasswordTextFormField(
+                onChanged: (String value) {
                   password = value;
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  } else if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
                 },
               ),
               const SizedBox(height: 16),
