@@ -21,5 +21,5 @@ This app follows the Model-View-Controller (MVC) architecture pattern. The model
 ## Dependencies
 This project uses the following dependencies:
 
--Flutter
--Material Design
+- Flutter
+- Material Design
