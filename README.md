@@ -1,16 +1,25 @@
-# chat_app_mvc
+# Chat App MVC
 
-A new Flutter project.
+
+Chat App MVC is a Flutter-based chat application using the Model-View-Controller (MVC) architecture pattern. Users can register for an account and view a list of participants.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Clone the project to your local machine.
+2. Open the project in your preferred IDE.
+3. Run the app on a simulator or device.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Registration: Users can register for an account by providing a name, email, and password.
+- Participants List: Users can view a list of participants who have registered for the app.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Architecture
+
+This app follows the Model-View-Controller (MVC) architecture pattern. The model folder contains the UserModel class, which represents the data of the app. The controller folder contains the UserController class, which handles user interactions and updates the data. The view folder contains the MyHomePage and ParticipantsPage widgets, which display the user interface.
+
+## Dependencies
+This project uses the following dependencies:
+
+- Flutter
+- Material Design
