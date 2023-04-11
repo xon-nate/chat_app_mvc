@@ -1,9 +1,11 @@
 import 'package:chat_app_mvc/view/home_page.dart';
+import 'package:chat_app_mvc/view/register_page.dart';
 import 'package:chat_app_mvc/view/participants_page.dart';
 import 'package:flutter/material.dart';
 import 'controller/user_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'view/login_page.dart';
 
 Future<void> main() async {
   // Initialize Firebase
@@ -24,7 +26,11 @@ class MyApp extends StatelessWidget {
     UserController userController = UserController();
     return MaterialApp(
       routes: {
-        '/': (context) => MyHomePage(
+        '/': (context) => HomePage(),
+        '/register': (context) => RegisterPage(
+              userController: userController,
+            ),
+        '/login': (context) => LoginPage(
               userController: userController,
             ),
         '/participants': (context) => ParticipantsPage(
