@@ -10,7 +10,7 @@ class User {
       {required this.name,
       required this.email,
       required this.password,
-      required this.id}) {}
+      required this.id});
   @override
   String toString() {
     return 'User{name: $name, email: $email, password: $password, id: $id}';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controller/user_controller.dart';
-import 'widgets/password_text_field.dart';
+import 'widgets/form_text_fields.dart';
 
 class RegisterPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -11,15 +11,10 @@ class RegisterPage extends StatelessWidget {
     userController.registerUser(name, email, password);
   }
 
-  String name = '', email = '', password = '';
-
   @override
   Widget build(BuildContext context) {
+    String name = '', email = '', password = '';
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -28,49 +23,16 @@ class RegisterPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter your name',
-                  prefixIcon: Icon(Icons.person),
-                ),
-                onChanged: (value) => name = value,
-                validator: (value) {
-                  //Regular expression for name with only letters and spaces
-                  final RegExp nameRegExp = RegExp(r'^[a-zA-Z ]+$');
-                  if (value == null ||
-                      value.isEmpty ||
-                      !nameRegExp.hasMatch(value)) {
-                    return 'Please a valid name';
-                  } else if (value.length < 3) {
-                    return 'Name must be at least 3 characters';
-                  }
-
-                  return null;
-                },
+              UserNameTextFormField(
+                onChanged: (String value) => name = value,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter your email',
-                  prefixIcon: Icon(Icons.email),
-                ),
-                onChanged: (value) => email = value,
-                validator: (value) {
-                  if (value == null || value.isEmpty || !value.contains('@')) {
-                    return 'Please a valid email';
-                  }
-                  return null;
-                },
+              EmailTextFormField(
+                onChanged: (String value) => email = value,
               ),
               const SizedBox(height: 16),
               PasswordTextFormField(
-                onChanged: (String value) {
-                  password = value;
-                },
+                onChanged: (String value) => password = value,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -81,8 +43,8 @@ class RegisterPage extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Valid Data')),
                     );
-                    Navigator.pushNamed(context, '/participants');
                     addUser(name, email, password);
+                    Navigator.pushNamed(context, '/participants');
                   }
                 },
                 child: const Text('Register'),

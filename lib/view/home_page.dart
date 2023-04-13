@@ -1,33 +1,43 @@
 import 'package:flutter/material.dart';
 
+import '../controller/user_controller.dart';
+import 'login_page.dart';
+import 'register_page.dart';
+
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final UserController userController;
+  const HomePage({super.key, required this.userController});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
-                child: const Text('Register'),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Chat App'),
+          centerTitle: true,
+          bottom: const TabBar(
+            tabs: [
+              Tab(
+                text: 'Login',
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-                child: const Text('Login'),
+              Tab(
+                text: 'Register',
               ),
             ],
           ),
-        ));
+        ),
+        body: TabBarView(
+          children: [
+            LoginPage(
+              userController: userController,
+            ),
+            RegisterPage(
+              userController: userController,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
