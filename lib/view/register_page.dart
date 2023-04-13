@@ -9,6 +9,7 @@ class RegisterPage extends StatelessWidget {
   RegisterPage({super.key, required this.userController});
   void addUser(String name, email, password) {
     userController.registerUser(name, email, password);
+    userController.loginUser(email, password);
   }
 
   @override

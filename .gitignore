@@ -11,7 +11,8 @@
 migrate_working_dir/
 /linux
 .vscode
-
+lib/firebase_options.dart
+/lib/navigator.dart
 # IntelliJ related
 *.iml
 *.ipr

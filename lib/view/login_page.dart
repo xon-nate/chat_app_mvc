@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controller/user_controller.dart';
+// import '../navigator.dart';
 import 'widgets/form_text_fields.dart';
 import 'package:chat_app_mvc/constants/constants.dart';
 
