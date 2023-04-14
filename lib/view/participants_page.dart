@@ -64,21 +64,26 @@ class ParticipantsPage extends StatelessWidget {
               )
             : null,
       ),
-      body: Consumer<UserController>(
-        builder: (context, userController, child) {
-          return ListView.builder(
-            itemCount: participants.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(participants[index].name),
-                subtitle: Text(participants[index].email),
-                onTap: () {
-                  Navigator.pushNamed(context, '/chat', arguments: {
-                    'loggedInUser': loggedInUser,
-                    'selectedUser': participants[index],
-                  });
-                },
-              );
+      body: ListView.builder(
+        itemCount: participants.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(participants[index].name),
+            subtitle: Text(participants[index].email),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            leading: CircleAvatar(
+              child: Text(
+                participants[index].name[0],
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor:
+                  Colors.primaries[index % Colors.primaries.length],
+            ),
+            onTap: () {
+              Navigator.pushNamed(context, '/chat', arguments: {
+                'loggedInUser': loggedInUser,
+                'selectedUser': participants[index],
+              });
             },
           );
         },

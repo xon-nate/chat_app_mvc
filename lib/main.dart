@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'constants/constants.dart';
 import 'controller/user_controller.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'view/login_page.dart';
+// import 'firebase_options.dart';
+// import 'package:firebase_core/firebase_core.dart';
 
-Future<void> main() async {
+main() {
   // Initialize Firebase
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   // Run the app
   runApp(
     ChangeNotifierProvider(
