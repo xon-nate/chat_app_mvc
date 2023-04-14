@@ -12,10 +12,13 @@ class ParticipantsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final User? loggedInUser = userController.currentUser;
+    // List<User> participants = userController.getParticipants(loggedInUser);
+    // final participants =
+    //     context.watch<UserController>().getParticipants(loggedInUser);
     final User? loggedInUser = context.read<UserController>().currentUser;
     final List<User> participants =
         context.read<UserController>().getParticipants(loggedInUser);
-    //TODO no need for consumer, future builder, then inside it call context.read....tkon future
 
     return Scaffold(
       appBar: AppBar(
@@ -36,26 +39,14 @@ class ParticipantsPage extends StatelessWidget {
               )
             : const Text('Participants'),
         centerTitle: true,
-        leading: loggedInUser == null
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            : Container(),
-        actions: [
-          loggedInUser != null
-              ? IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    userController.logoutUser();
-                    print('${loggedInUser.getName.toString()} logged out');
-                  },
-                )
-              : Container(),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+            userController.logoutUser();
+            print('${loggedInUser.toString()} logged out');
+          },
+        ),
         bottom: loggedInUser != null
             ? const PreferredSize(
                 preferredSize: Size.fromHeight(48.0),
@@ -73,12 +64,6 @@ class ParticipantsPage extends StatelessWidget {
               )
             : null,
       ),
-
-      //TODO Implement future builder instead
-      //TODO Implement streambuilder?
-      //Sign out on firebase notifies the stream
-      //when that happens you don't have token / logged out
-
       body: Consumer<UserController>(
         builder: (context, userController, child) {
           return ListView.builder(
@@ -87,8 +72,6 @@ class ParticipantsPage extends StatelessWidget {
               return ListTile(
                 title: Text(participants[index].name),
                 subtitle: Text(participants[index].email),
-                leading: CircleAvatar(child: Text(participants[index].name[0])),
-                trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   Navigator.pushNamed(context, '/chat', arguments: {
                     'loggedInUser': loggedInUser,
@@ -100,23 +83,22 @@ class ParticipantsPage extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.message),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text('View User List'),
         onPressed: () {
           loggedInUser == null
               ? ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Please login to send a message'),
+                    content: Text('Please login to view user list'),
                   ),
                 )
-              : Navigator.pushNamed(
-                  context,
-                  '/chat',
-                  arguments: {
-                    'loggedInUser': loggedInUser,
-                    'selectedUser': null,
-                  },
+              : ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        'You are already logged in as ${loggedInUser.name}'),
+                  ),
                 );
+          print(userController.allUsers.toString());
         },
       ),
     );

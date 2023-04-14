@@ -15,8 +15,4 @@ class User {
   String toString() {
     return 'User{name: $name, email: $email, password: $password, id: $id}';
   }
-
-  String get getName => name;
-  String get getEmail => email;
-  String get getID => id.toString();
 }

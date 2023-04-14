@@ -65,7 +65,6 @@ class UserNameTextFormField extends StatelessWidget {
         hintText: 'Enter your name',
         prefixIcon: Icon(Icons.person),
       ),
-      onChanged: (value) => onChanged(value),
       validator: (value) {
         final RegExp nameRegExp = RegExp(AppConstants.nameRegex);
         if (value == null || value.isEmpty || !nameRegExp.hasMatch(value)) {
@@ -73,6 +72,7 @@ class UserNameTextFormField extends StatelessWidget {
         } else if (value.length < 3) {
           return 'Name must be at least 3 characters';
         }
+
         return null;
       },
     );
