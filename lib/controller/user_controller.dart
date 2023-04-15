@@ -50,4 +50,20 @@ class UserController with ChangeNotifier {
       throw e.message!;
     }
   }
+
+  Future<bool> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      throw e.message!;
+    }
+  }
+
+  Future<void> logoutUser() async {
+    await _auth.signOut();
+  }
 }
