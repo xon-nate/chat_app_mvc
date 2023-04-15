@@ -95,7 +95,7 @@ class EmailTextFormField extends StatelessWidget {
       ),
       onChanged: (value) => onChanged(value),
       validator: (value) {
-        if (RegExp(AppConstants.emailRegex).hasMatch(value!)) {
+        if (!RegExp(AppConstants.emailRegex).hasMatch(value!)) {
           return 'Please a valid email';
         }
         return null;

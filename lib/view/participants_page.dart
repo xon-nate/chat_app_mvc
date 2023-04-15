@@ -16,9 +16,12 @@ class ParticipantsPage extends StatelessWidget {
     // List<User> participants = userController.getParticipants(loggedInUser);
     // final participants =
     //     context.watch<UserController>().getParticipants(loggedInUser);
-    final User? loggedInUser = context.read<UserController>().currentUser;
-    final List<User> participants =
-        context.read<UserController>().getParticipants(loggedInUser);
+    final MyAppUser? loggedInUser = context.read<UserController>().currentUser;
+    context.read<UserController>().getUserList();
+    final List<MyAppUser> participants =
+        context.read<UserController>().getUsers;
+    // final List<MyAppUser> participants =
+    //     context.read<UserController>().getParticipants(loggedInUser);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,8 +46,8 @@ class ParticipantsPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
-            userController.logoutUser();
-            print('${loggedInUser.toString()} logged out');
+            // userController.logoutUser();
+            // print('${loggedInUser.toString()} logged out');
           },
         ),
         bottom: loggedInUser != null
@@ -72,39 +75,27 @@ class ParticipantsPage extends StatelessWidget {
             subtitle: Text(participants[index].email),
             trailing: const Icon(Icons.arrow_forward_ios),
             leading: CircleAvatar(
+
               backgroundColor:
                   Colors.primaries[index % Colors.primaries.length],
               child: Text(
                 participants[index].name[0],
                 style: const TextStyle(color: Colors.white),
               ),
+
             ),
             onTap: () {
-              Navigator.pushNamed(context, '/chat', arguments: {
-                'loggedInUser': loggedInUser,
-                'selectedUser': participants[index],
+              // Navigator.pushNamed(context, '/chat', arguments: {
+                // 'loggedInUser': loggedInUser,
+                // 'selectedUser': participants[index],
               });
             },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('View User List'),
-        onPressed: () {
-          loggedInUser == null
-              ? ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please login to view user list'),
-                  ),
-                )
-              : ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        'You are already logged in as ${loggedInUser.name}'),
-                  ),
-                );
-          print(userController.allUsers.toString());
-        },
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.message),
+        onPressed: () {},
       ),
     );
   }

@@ -1,86 +1,53 @@
-import 'package:chat_app_mvc/model/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+import '../model/user_model.dart';
+
 class UserController with ChangeNotifier {
-  UserController() {
-    addUser('John', 'john@123', 'john1234');
-    addUser('Dave', 'dave@123', 'dave1234');
-    addUser('Mike', 'mike@123', 'mike1234');
-  }
-  List<User> userList = [];
-  List<User> get allUsers => userList;
-  User? currentUser;
-  void setCurrentUser(User? user) {
-    currentUser = user!;
-  }
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void clearCurrentUser() {
-    currentUser = null;
-  }
+  MyAppUser? currentUser;
+  List<MyAppUser> _userList = [];
 
-  User addUser(String name, email, String password) {
-    User newUser = User(
-        name: name.trim(),
-        email: email.trim(),
-        password: password.trim(),
-        id: userList.length);
-    userList.add(newUser);
+  List<MyAppUser> get getUsers => _userList;
+  MyAppUser? get getCurrentUser => currentUser;
+
+  Future<void> getUserList() async {
+    QuerySnapshot snapshot = await _firestore.collection('users').get();
+    if (getCurrentUser != null) {
+      _userList = snapshot.docs
+          .map((doc) =>
+              MyAppUser.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .where((element) => element.email != getCurrentUser!.email)
+          .toList(growable: false);
+    } else {
+      _userList = snapshot.docs
+          .map((doc) =>
+              MyAppUser.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList(growable: false);
+    }
+
     notifyListeners();
-    return newUser;
   }
 
-  void registerUser(String name, String email, String password) {
-    if (validateUserRegistration(name, email, password)) {
-      debugPrint('${addUser(name, email, password)}');
-    } else {
-      debugPrint('User already exists');
-    }
-  }
-
-  bool validateUserRegistration(String name, String email, String password) {
-    for (var user in userList) {
-      if (user.email == email.trim() || user.password == password) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  User? validateUserLogin(String email, String password) {
-    for (var user in userList) {
-      if (user.email == email.trim() && user.password == password) {
-        return user;
-      }
-    }
-    return null;
-  }
-
-  void logoutUser() {
-    clearCurrentUser();
-  }
-
-  bool loginUser(String email, String password) {
-    User? user = validateUserLogin(email, password);
-    if (user != null) {
-      setCurrentUser(user);
+  Future<bool> registerUser({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      await _firestore.collection('users').add({
+        'name': name,
+        'email': email,
+        'password': password,
+      });
       return true;
-    } else {
-      debugPrint('Invalid credentials');
-      return false;
+    } on FirebaseAuthException catch (e) {
+      throw e.message!;
     }
-  }
-
-  List<User> getParticipants(User? user) {
-    if (user == null) {
-      return userList;
-    } else {
-      List<User> participants =
-          userList.where((element) => element.id != user.id).toList();
-      return participants;
-    }
-  }
-
-  int getSize() {
-    return userList.length;
   }
 }

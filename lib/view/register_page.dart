@@ -8,7 +8,7 @@ class RegisterPage extends StatelessWidget {
   final UserController userController;
   RegisterPage({super.key, required this.userController});
   void addUser(String name, email, password) {
-    userController.registerUser(name, email, password);
+    // userController.registerUser(name, email, password);
   }
 
   @override
@@ -37,15 +37,20 @@ class RegisterPage extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  debugPrint(userController.allUsers.toString());
-                  // Validate returns true if the form is valid, or false otherwise.
                   if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Valid Data')),
-                    );
-                    addUser(name, email, password);
+                    userController.registerUser(
+                        name: name, email: email, password: password);
                     Navigator.pushNamed(context, '/participants');
                   }
+                  // debugPrint(userController.allUsers.toString());
+                  // // Validate returns true if the form is valid, or false otherwise.
+                  // if (_formKey.currentState!.validate()) {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     const SnackBar(content: Text('Valid Data')),
+                  //   );
+                  //   addUser(name, email, password);
+                  //   Navigator.pushNamed(context, '/participants');
+                  // }
                 },
                 child: const Text('Register'),
               ),

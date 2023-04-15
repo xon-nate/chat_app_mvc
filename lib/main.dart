@@ -1,24 +1,29 @@
 import 'package:chat_app_mvc/view/home_page.dart';
 import 'package:chat_app_mvc/view/register_page.dart';
 import 'package:chat_app_mvc/view/participants_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'constants/constants.dart';
 import 'controller/user_controller.dart';
+import 'firebase_options.dart';
 import 'view/login_page.dart';
-// import 'firebase_options.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-main() {
+Future<void> main() async {
   // Initialize Firebase
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   // Run the app
   runApp(
     ChangeNotifierProvider(
-      create: (_) => UserController(),
+      create: (context) => UserController(),
       child: const MyApp(),
     ),
   );
@@ -31,6 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserController userController = Provider.of<UserController>(context);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppConstants.appName,
