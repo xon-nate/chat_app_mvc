@@ -75,20 +75,22 @@ class ParticipantsPage extends StatelessWidget {
             subtitle: Text(participants[index].email),
             trailing: const Icon(Icons.arrow_forward_ios),
             leading: CircleAvatar(
-
               backgroundColor:
                   Colors.primaries[index % Colors.primaries.length],
               child: Text(
                 participants[index].name[0],
                 style: const TextStyle(color: Colors.white),
               ),
-
             ),
             onTap: () {
-              // Navigator.pushNamed(context, '/chat', arguments: {
-                // 'loggedInUser': loggedInUser,
-                // 'selectedUser': participants[index],
-              });
+              // Navigator.pushNamed(
+              //   context,
+              //   '/chat',
+              //   arguments: {
+              //     'loggedInUser': loggedInUser,
+              //     'selectedUser': participants[index],
+              //   },
+              // );
             },
           );
         },
