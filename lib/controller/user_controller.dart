@@ -14,7 +14,7 @@ class UserController with ChangeNotifier {
   List<MyAppUser> get getUsers => _userList;
   MyAppUser? get getCurrentUser => currentUser;
 
-  Future<void> getUserList() async {
+  Future<List<MyAppUser>> getUserList() async {
     QuerySnapshot snapshot = await _firestore.collection('users').get();
     if (getCurrentUser != null) {
       _userList = snapshot.docs
@@ -30,6 +30,7 @@ class UserController with ChangeNotifier {
     }
 
     notifyListeners();
+    return _userList;
   }
 
   Future<bool> registerUser({

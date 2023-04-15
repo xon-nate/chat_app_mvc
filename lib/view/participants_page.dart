@@ -16,10 +16,12 @@ class ParticipantsPage extends StatelessWidget {
     // List<User> participants = userController.getParticipants(loggedInUser);
     // final participants =
     //     context.watch<UserController>().getParticipants(loggedInUser);
-    final MyAppUser? loggedInUser = context.read<UserController>().currentUser;
-    context.read<UserController>().getUserList();
-    final List<MyAppUser> participants =
-        context.read<UserController>().getUsers;
+    // final MyAppUser? loggedInUser = context.read<UserController>().currentUser;
+    final MyAppUser? loggedInUser = context.watch<UserController>().currentUser;
+    final userController = context.read<UserController>();
+    // context.read<UserController>().getUserList();
+    // final List<MyAppUser> participants =
+    // context.read<UserController>().getUsers;
     // final List<MyAppUser> participants =
     //     context.read<UserController>().getParticipants(loggedInUser);
 
@@ -67,33 +69,46 @@ class ParticipantsPage extends StatelessWidget {
               )
             : null,
       ),
-      body: ListView.builder(
-        itemCount: participants.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(participants[index].name),
-            subtitle: Text(participants[index].email),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            leading: CircleAvatar(
-              backgroundColor:
-                  Colors.primaries[index % Colors.primaries.length],
-              child: Text(
-                participants[index].name[0],
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            onTap: () {
-              // Navigator.pushNamed(
-              //   context,
-              //   '/chat',
-              //   arguments: {
-              //     'loggedInUser': loggedInUser,
-              //     'selectedUser': participants[index],
-              //   },
-              // );
-            },
-          );
-        },
+      body: FutureProvider<List<MyAppUser>>(
+        create: (_) => userController.getUserList(),
+        initialData: [],
+        child: Consumer<List<MyAppUser>>(
+          builder: (context, participants, _) {
+            if (participants.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return ListView.builder(
+              itemCount: participants.length,
+              itemBuilder: (context, index) {
+                final MyAppUser participant = participants[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor:
+                        Colors.primaries[index % Colors.primaries.length],
+                    child: Text(
+                      participant.name[0],
+                      style: TextStyle(
+                        fontWeight: participant.name[0] ==
+                                participant.name[0].toUpperCase()
+                            ? FontWeight.normal
+                            : FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  title: Text(participant.name),
+                  subtitle: Text(participant.email),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/chat', arguments: {
+                      'loggedInUser': loggedInUser,
+                      'participant': participant,
+                    });
+                  },
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.message),

@@ -32,6 +32,9 @@ android {
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
     lintOptions {
+        warning 'Unchecked'
+    }
+    lintOptions {
         warning('unchecked')
     }
     compileOptions {
