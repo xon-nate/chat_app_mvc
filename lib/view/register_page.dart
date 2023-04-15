@@ -36,21 +36,19 @@ class RegisterPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    userController.registerUser(
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    );
+                    await userController.registerUser(
                         name: name, email: email, password: password);
                     Navigator.pushNamed(context, '/participants');
                   }
-                  // debugPrint(userController.allUsers.toString());
-                  // // Validate returns true if the form is valid, or false otherwise.
-                  // if (_formKey.currentState!.validate()) {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     const SnackBar(content: Text('Valid Data')),
-                  //   );
-                  //   addUser(name, email, password);
-                  //   Navigator.pushNamed(context, '/participants');
-                  // }
                 },
                 child: const Text('Register'),
               ),

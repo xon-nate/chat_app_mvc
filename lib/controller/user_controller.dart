@@ -46,6 +46,7 @@ class UserController with ChangeNotifier {
         'email': email,
         'password': password,
       });
+      notifyListeners();
       return true;
     } on FirebaseAuthException catch (e) {
       throw e.message!;
@@ -58,6 +59,17 @@ class UserController with ChangeNotifier {
   }) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+      try {
+        QuerySnapshot snapshot = await _firestore
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .get();
+        currentUser = MyAppUser.fromMap(
+            snapshot.docs.first.data() as Map<String, dynamic>,
+            snapshot.docs.first.id);
+      } catch (e) {
+        throw e;
+      }
       return true;
     } on FirebaseAuthException catch (e) {
       throw e.message!;

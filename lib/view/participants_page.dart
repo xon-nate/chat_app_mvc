@@ -12,18 +12,10 @@ class ParticipantsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final User? loggedInUser = userController.currentUser;
-    // List<User> participants = userController.getParticipants(loggedInUser);
-    // final participants =
-    //     context.watch<UserController>().getParticipants(loggedInUser);
-    // final MyAppUser? loggedInUser = context.read<UserController>().currentUser;
     final MyAppUser? loggedInUser = context.watch<UserController>().currentUser;
-    final userController = context.read<UserController>();
-    // context.read<UserController>().getUserList();
+    final userController = context.watch<UserController>();
     // final List<MyAppUser> participants =
-    // context.read<UserController>().getUsers;
-    // final List<MyAppUser> participants =
-    //     context.read<UserController>().getParticipants(loggedInUser);
+    //     context.watch<UserController>().getUsers;
 
     return Scaffold(
       appBar: AppBar(
@@ -69,9 +61,9 @@ class ParticipantsPage extends StatelessWidget {
               )
             : null,
       ),
-      body: FutureProvider<List<MyAppUser>>(
-        create: (_) => userController.getUserList(),
-        initialData: [],
+      body: FutureProvider<List<MyAppUser>>.value(
+        value: userController.getUserList(),
+        initialData: const [],
         child: Consumer<List<MyAppUser>>(
           builder: (context, participants, _) {
             if (participants.isEmpty) {
@@ -81,6 +73,8 @@ class ParticipantsPage extends StatelessWidget {
               itemCount: participants.length,
               itemBuilder: (context, index) {
                 final MyAppUser participant = participants[index];
+                bool isUpperCased =
+                    participant.name[0] == participant.name[0].toUpperCase();
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor:
@@ -88,10 +82,8 @@ class ParticipantsPage extends StatelessWidget {
                     child: Text(
                       participant.name[0],
                       style: TextStyle(
-                        fontWeight: participant.name[0] ==
-                                participant.name[0].toUpperCase()
-                            ? FontWeight.normal
-                            : FontWeight.bold,
+                        fontWeight:
+                            isUpperCased ? FontWeight.normal : FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
