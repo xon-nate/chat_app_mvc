@@ -40,10 +40,18 @@ class ParticipantsPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
-            // userController.logoutUser();
-            // print('${loggedInUser.toString()} logged out');
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pop(context);
+              userController.signOut();
+              print('${loggedInUser.toString()} logged out');
+            },
+          ),
+        ],
         bottom: loggedInUser != null
             ? const PreferredSize(
                 preferredSize: Size.fromHeight(48.0),
@@ -67,7 +75,9 @@ class ParticipantsPage extends StatelessWidget {
         child: Consumer<List<MyAppUser>>(
           builder: (context, participants, _) {
             if (participants.isEmpty) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             }
             return ListView.builder(
               itemCount: participants.length,
@@ -88,13 +98,77 @@ class ParticipantsPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios,
+                    // color: Colors.black,
+                  ),
                   title: Text(participant.name),
                   subtitle: Text(participant.email),
                   onTap: () {
-                    Navigator.pushNamed(context, '/chat', arguments: {
-                      'loggedInUser': loggedInUser,
-                      'participant': participant,
-                    });
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: 200,
+                          width: MediaQuery.of(context).size.width,
+                          child: Row(
+                            children: [
+                              Column(
+                                children: [
+                                  ListTile(
+                                    leading: const Icon(Icons.message),
+                                    title: const Text('Send Message'),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/chat',
+                                        arguments: participant,
+                                      );
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.info),
+                                    title: const Text('View Profile'),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/profile',
+                                        arguments: participant,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  DropdownButton(
+                                    value: participant,
+                                    items: participants.map(
+                                      (e) {
+                                        return DropdownMenuItem(
+                                          value: e,
+                                          child: Text(e.name),
+                                        );
+                                      },
+                                    ).toList(),
+                                    onChanged: (value) {
+                                      print(value);
+                                    },
+                                  ),
+                                  TextFormField(
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter your message',
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    );
                   },
                 );
               },
@@ -109,3 +183,39 @@ class ParticipantsPage extends StatelessWidget {
     );
   }
 }
+// showModalBottomSheet(
+//                       context: context,
+//                       builder: (context) {
+//                         return Container(
+//                           height: 200,
+//                           child: Column(
+//                             children: [
+//                               ListTile(
+//                                 leading: const Icon(Icons.message),
+//                                 title: const Text('Send Message'),
+//                                 onTap: () {
+//                                   Navigator.pop(context);
+//                                   Navigator.pushNamed(
+//                                     context,
+//                                     '/chat',
+//                                     arguments: participant,
+//                                   );
+//                                 },
+//                               ),
+//                               ListTile(
+//                                 leading: const Icon(Icons.info),
+//                                 title: const Text('View Profile'),
+//                                 onTap: () {
+//                                   Navigator.pop(context);
+//                                   Navigator.pushNamed(
+//                                     context,
+//                                     '/profile',
+//                                     arguments: participant,
+//                                   );
+//                                 },
+//                               ),
+//                             ],
+//                           ),
+//                         );
+//                       },
+//                     )

@@ -45,9 +45,15 @@ class RegisterPage extends StatelessWidget {
                         return const Center(child: CircularProgressIndicator());
                       },
                     );
-                    await userController.registerUser(
-                        name: name, email: email, password: password);
-                    Navigator.pushNamed(context, '/participants');
+                    await userController
+                        .registerUser(
+                            name: name, email: email, password: password)
+                        .then((value) {
+                      userController.loginUser(
+                          email: email, password: password);
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/participants');
+                    });
                   }
                 },
                 child: const Text('Register'),

@@ -39,23 +39,29 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 child: const Text('Login'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate())
-                    signIn(email!, password!);
-                  // Validate returns true if the form is valid, or false otherwise.
-                  // if (_formKey.currentState!.validate()) {
-                  //   bool loginUser =
-                  //       userController.loginUser(email!, password!);
-                  //   if (loginUser) {
-                  //     Navigator.pushNamed(context, '/participants');
-                  //   } else {
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //       const SnackBar(
-                  //         content: Text('Invalid email or password'),
-                  //       ),
-                  //     );
-                  //   }
-                  // }
+                onPressed: () async {
+                  if (userController.currentUser != null) {
+                    Navigator.pushNamed(context, '/participants');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Already Logged In As ${userController.currentUser!.email}'),
+                      ),
+                    );
+                  } else {
+                    if (_formKey.currentState!.validate()) {
+                      if (await userController.loginUser(
+                          email: email!, password: password!)) {
+                        Navigator.pushNamed(context, '/participants');
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Invalid Credentials'),
+                          ),
+                        );
+                      }
+                    }
+                  }
                 },
               ),
             ],

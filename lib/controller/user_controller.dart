@@ -65,10 +65,11 @@ class UserController with ChangeNotifier {
             .where('email', isEqualTo: email)
             .get();
         currentUser = MyAppUser.fromMap(
-            snapshot.docs.first.data() as Map<String, dynamic>,
-            snapshot.docs.first.id);
+          snapshot.docs.first.data() as Map<String, dynamic>,
+          snapshot.docs.first.id,
+        );
       } catch (e) {
-        throw e;
+        rethrow;
       }
       return true;
     } on FirebaseAuthException catch (e) {
@@ -76,7 +77,9 @@ class UserController with ChangeNotifier {
     }
   }
 
-  Future<void> logoutUser() async {
+  Future<void> signOut() async {
     await _auth.signOut();
+    currentUser = null;
+    notifyListeners();
   }
 }
