@@ -18,6 +18,7 @@ class ParticipantsPage extends StatelessWidget {
     //     context.watch<UserController>().getUsers;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: loggedInUser != null
             ? PreferredSize(
@@ -106,65 +107,111 @@ class ParticipantsPage extends StatelessWidget {
                   subtitle: Text(participant.email),
                   onTap: () {
                     showModalBottomSheet(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      useSafeArea: true,
+                      isScrollControlled: true,
                       context: context,
                       builder: (context) {
-                        return Container(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width,
-                          child: Row(
-                            children: [
-                              Column(
-                                children: [
-                                  ListTile(
-                                    leading: const Icon(Icons.message),
-                                    title: const Text('Send Message'),
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/chat',
-                                        arguments: participant,
-                                      );
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: const Icon(Icons.info),
-                                    title: const Text('View Profile'),
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/profile',
-                                        arguments: participant,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  DropdownButton(
-                                    value: participant,
-                                    items: participants.map(
-                                      (e) {
-                                        return DropdownMenuItem(
-                                          value: e,
-                                          child: Text(e.name),
-                                        );
-                                      },
-                                    ).toList(),
+                        return SingleChildScrollView(
+                          reverse: true,
+                          child: Container(
+                            padding: EdgeInsets.only(
+                              bottom:
+                                  MediaQuery.of(context).viewInsets.bottom + 40,
+                              left: 20,
+                              right: 20,
+                              top: 10,
+                            ),
+                            // height: MediaQuery.of(context).size.height * 0.4,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Send message',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Divider(
+                                      thickness: 2,
+                                      height: 0,
+                                      indent: 30,
+                                      endIndent: 30,
+                                      color: Colors.grey[400],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 25),
+                                // const Text(
+                                //   'To: ',
+                                //   style: TextStyle(
+                                //     fontWeight: FontWeight.bold,
+                                //   ),
+                                // ),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: DropdownButtonFormField(
+                                    hint: const Text('Select a user'),
+                                    decoration: const InputDecoration(
+                                      hintText: 'Select a user',
+                                      labelText: 'Select a user',
+                                    ),
+                                    isExpanded: true,
+                                    items: participants
+                                        .map(
+                                          (e) => DropdownMenuItem(
+                                            child: Text(e.name),
+                                            value: e,
+                                          ),
+                                        )
+                                        .toList(),
                                     onChanged: (value) {
                                       print(value);
                                     },
                                   ),
-                                  TextFormField(
+                                ),
+                                SizedBox(height: 10),
+                                const Text(
+                                  'Message: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: TextFormField(
                                     decoration: InputDecoration(
                                       hintText: 'Enter your message',
+                                      suffixIcon: IconButton(
+                                        alignment: Alignment.bottomRight,
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.send),
+                                      ),
                                     ),
+                                    maxLines: 7,
+                                    minLines: 3,
+                                    expands: false,
+                                    onChanged: (value) {
+                                      print(value);
+                                    },
                                   ),
-                                ],
-                              )
-                            ],
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text('Submit New Message'))
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -183,39 +230,3 @@ class ParticipantsPage extends StatelessWidget {
     );
   }
 }
-// showModalBottomSheet(
-//                       context: context,
-//                       builder: (context) {
-//                         return Container(
-//                           height: 200,
-//                           child: Column(
-//                             children: [
-//                               ListTile(
-//                                 leading: const Icon(Icons.message),
-//                                 title: const Text('Send Message'),
-//                                 onTap: () {
-//                                   Navigator.pop(context);
-//                                   Navigator.pushNamed(
-//                                     context,
-//                                     '/chat',
-//                                     arguments: participant,
-//                                   );
-//                                 },
-//                               ),
-//                               ListTile(
-//                                 leading: const Icon(Icons.info),
-//                                 title: const Text('View Profile'),
-//                                 onTap: () {
-//                                   Navigator.pop(context);
-//                                   Navigator.pushNamed(
-//                                     context,
-//                                     '/profile',
-//                                     arguments: participant,
-//                                   );
-//                                 },
-//                               ),
-//                             ],
-//                           ),
-//                         );
-//                       },
-//                     )
