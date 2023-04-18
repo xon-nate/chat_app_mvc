@@ -13,9 +13,26 @@ class UserController with ChangeNotifier {
 
   List<MyAppUser> get getUsers => _userList;
   MyAppUser? get getCurrentUser => currentUser;
+  String get getCurrentUserName => currentUser!.name;
+  String get getUserId => currentUser!.id;
+
+  UserController() {
+    _auth.authStateChanges().listen((User? user) {
+      if (user != null) {
+        currentUser = MyAppUser(
+          id: user.uid,
+          name: user.displayName ?? '',
+          email: user.email ?? '',
+          password: '',
+        );
+        print('${currentUser} is signed in!');
+      }
+    });
+  }
 
   Future<List<MyAppUser>> getUserList() async {
     QuerySnapshot snapshot = await _firestore.collection('users').get();
+
     if (getCurrentUser != null) {
       _userList = snapshot.docs
           .map((doc) =>
@@ -39,9 +56,13 @@ class UserController with ChangeNotifier {
     required String password,
   }) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      await _firestore.collection('users').add({
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      String uid = userCredential.user!.uid;
+      await _firestore.collection('users').doc(uid).set({
         'name': name,
         'email': email,
         'password': password,

@@ -62,6 +62,7 @@ class RegisterPage extends StatelessWidget {
           ),
         ),
       ),
+      // floatingActionButton:FloatingActionButton(onPressed:())
     );
   }
 }

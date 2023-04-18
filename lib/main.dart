@@ -1,18 +1,14 @@
 import 'package:chat_app_mvc/view/home_page.dart';
 import 'package:chat_app_mvc/view/register_page.dart';
 import 'package:chat_app_mvc/view/participants_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'constants/constants.dart';
+import 'controller/chat_controller.dart';
 import 'controller/user_controller.dart';
 import 'firebase_options.dart';
 import 'view/login_page.dart';
-import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   // Initialize Firebase
@@ -22,9 +18,12 @@ Future<void> main() async {
   );
   // Run the app
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => UserController(),
-      child: const MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserController()),
+        ChangeNotifierProvider(create: (_) => ChatController()),
+      ],
+      child: MyApp(),
     ),
   );
 }
@@ -50,6 +49,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.participants: (_) => ParticipantsPage(
               userController: userController,
             ),
+        // AppRoutes.chat: (_) => ChatPage(userController: userController),
         // '/chat': (context) => const ChatPage(),
       },
     );
