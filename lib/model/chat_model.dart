@@ -13,25 +13,20 @@ class Chat {
     required this.messages,
   });
 
-  factory Chat.fromJson(Map<String, dynamic> json) {
+  static Chat fromMap(Map<String, dynamic> map, String id) {
     return Chat(
-      id: json['id'],
-      user1Id: json['user1Id'],
-      user2Id: json['user2Id'],
-      messages: List<Message>.from(
-        json['messages'].map(
-          (e) => Message.fromJson(e),
-        ),
-      ),
+      id: id,
+      user1Id: map['user1Id'],
+      user2Id: map['user2Id'],
+      messages: map['messages'],
     );
   }
 
-  Map<String, dynamic> toJson() {
+  static Map<String, dynamic> toMap(Chat chat) {
     return {
-      'id': id,
-      'user1Id': user1Id,
-      'user2Id': user2Id,
-      'messages': messages.map((e) => e.toJson()).toList(),
+      'user1Id': chat.user1Id,
+      'user2Id': chat.user2Id,
+      'messages': chat.messages,
     };
   }
 

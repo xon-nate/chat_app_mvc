@@ -33,7 +33,7 @@ class ParticipantsPage extends StatelessWidget {
                   child: Text(
                     'Welcome back ${loggedInUser.name}',
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -64,7 +64,7 @@ class ParticipantsPage extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Participants List (Tap on a user to chat)',
+                    'Participants List ',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -108,27 +108,17 @@ class ParticipantsPage extends StatelessWidget {
                 if (loggedInUser != null) {
                   String user1Id = loggedInUser.id;
                   String user2Id = participant.id;
-                  if (await chatController.chatExists(user1Id, user2Id)) {
-                    print('Chat exists');
-                  } else {
-                    print('Chat does not exist');
-                    context.read<ChatController>().createChat(user1Id, user2Id);
-                  }
+                  String chatId = chatController.getChatId(user1Id, user2Id);
+                  await chatController.getChat(chatId);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChatPage(
-                        userController: userController,
                         chatController: chatController,
+                        userController: userController,
                       ),
                     ),
                   );
-                  // Navigate.to(
-                  // ChatPage(
-                  // userController: userController,
-                  // sender: loggedInUser,
-                  // ),
-                  // );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
