@@ -22,7 +22,10 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(chatController.getCurrentChat.id);
+    String chatId = chatController.getCurrentChat.id;
+    // print(chatId);
+    List<Message> messages = chatController.getChatMessages;
+    // print(messages);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -32,47 +35,20 @@ class ChatPage extends StatelessWidget {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('chats')
-                  .doc(chatController.getCurrentChat.id)
-                  .collection('messages')
-                  .orderBy('timestamp')
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              stream: chatController.getChatMessagesStream(chatId),
+              builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  List<Message> messages = snapshot.data!.docs
+                  print(snapshot.data!.docs);
+                  messages = snapshot.data!.docs
                       .map((doc) =>
                           Message.fromMap(doc.data() as Map<String, dynamic>))
-                      .toList(growable: false);
+                      .toList();
+                  print(messages[0].text);
                   return ListView.builder(
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: messages[index].senderId ==
-                                  userController.getCurrentUser!.id
-                              ? MainAxisAlignment.end
-                              : MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: messages[index].senderId ==
-                                        userController.getCurrentUser!.id
-                                    ? Colors.blue
-                                    : Colors.grey,
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                messages[index].text,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      return ListTile(
+                        title: Text(messages[index].text),
                       );
                     },
                   );

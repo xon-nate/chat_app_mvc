@@ -13,9 +13,26 @@ class ChatController extends ChangeNotifier {
   late Chat currentChat = Chat(id: '', user1Id: '', user2Id: '', messages: []);
 
   get getCurrentChat => currentChat;
+
+  // get getChatMessagesStream => currentChat.messages;
   setCurrentChat(Chat chat) {
     currentChat = chat;
     notifyListeners();
+  }
+
+  get getChatMessages => currentChat.messages;
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatMessagesStream(
+      String chatId) {
+    print(_chatCollection
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp')
+        .snapshots());
+    return _chatCollection
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp')
+        .snapshots();
   }
 
   Future<Chat> getChat(MyAppUser sender, MyAppUser receiver) async {
@@ -43,8 +60,12 @@ class ChatController extends ChangeNotifier {
     return newChat;
   }
 
-  Stream<QuerySnapshot> getMessages(String chatId) {
-    return _chatCollection.doc(chatId).collection('messages').snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(String chatId) {
+    var msgs =
+        _chatCollection.doc(chatId).collection('messages').orderBy('timestamp');
+    print(msgs);
+    print(msgs.snapshots());
+    return msgs.snapshots();
   }
 
   Future<Chat> createChat(String user1Id, String user2Id) async {
