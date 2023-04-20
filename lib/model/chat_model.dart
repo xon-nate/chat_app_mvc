@@ -13,25 +13,24 @@ class Chat {
     required this.messages,
   });
 
-  static Chat fromMap(Map<String, dynamic> map, String id) {
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'user1Id': user1Id,
+      'user2Id': user2Id,
+      'messages': messages.map((m) => m.toMap()).toList(),
+    };
+  }
+
+  factory Chat.fromMap(Map<String, dynamic> map, String id) {
+    // print(map);
     return Chat(
       id: id,
       user1Id: map['user1Id'],
       user2Id: map['user2Id'],
-      messages: map['messages'],
+      messages: (map['messages'] as List<dynamic>)
+          .map((m) => Message.fromMap(m)) // pass document ID as second argument
+          .toList(),
     );
-  }
-
-  static Map<String, dynamic> toMap(Chat chat) {
-    return {
-      'user1Id': chat.user1Id,
-      'user2Id': chat.user2Id,
-      'messages': chat.messages,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Chat(id: $id, user1Id: $user1Id, user2Id: $user2Id, messages: $messages)';
   }
 }

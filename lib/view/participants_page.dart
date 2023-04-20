@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../controller/user_controller.dart';
 import '../controller/chat_controller.dart';
+import '../model/chat_model.dart';
 import '../model/user_model.dart';
 import '../navigator.dart';
 import 'chat_page.dart';
@@ -106,16 +107,21 @@ class ParticipantsPage extends StatelessWidget {
               onTap: () async {
                 ChatController chatController = context.read<ChatController>();
                 if (loggedInUser != null) {
-                  String user1Id = loggedInUser.id;
-                  String user2Id = participant.id;
-                  String chatId = chatController.getChatId(user1Id, user2Id);
-                  await chatController.getChat(chatId);
+                  // String user1Id = loggedInUser.id;
+                  // String user2Id = participant.id;
+                  // String chatId = chatController.getChatId(user1Id, user2Id);
+
+                  // ignore: use_build_context_synchronously
+                  Chat newChat =
+                      await chatController.getChat(loggedInUser, participant);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChatPage(
                         chatController: chatController,
                         userController: userController,
+                        chat: newChat,
+                        participant: participant,
                       ),
                     ),
                   );

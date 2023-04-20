@@ -15,19 +15,33 @@ class UserController with ChangeNotifier {
   MyAppUser? get getCurrentUser => currentUser;
   String get getCurrentUserName => currentUser!.name;
   String get getUserId => currentUser!.id;
+  set setCurrentUser(MyAppUser user) {
+    currentUser = user;
+    notifyListeners();
+  }
 
   UserController() {
-    _auth.authStateChanges().listen((User? user) {
-      if (user != null) {
-        currentUser = MyAppUser(
-          id: user.uid,
-          name: user.displayName ?? '',
-          email: user.email ?? '',
-          password: '',
-        );
-        print('${currentUser} is signed in!');
-      }
-    });
+    _auth.authStateChanges().listen(
+      (User? user) async {
+        if (user != null) {
+          String userId =
+              (await _firestore.collection('users').doc(user.uid).get()).id;
+          String name =
+              (await _firestore.collection('users').doc(user.uid).get())
+                  .data()!['name'];
+          String email =
+              (await _firestore.collection('users').doc(user.uid).get())
+                  .data()!['email'];
+          String password =
+              (await _firestore.collection('users').doc(user.uid).get())
+                  .data()!['password'];
+          currentUser = MyAppUser(
+              id: userId, name: name, email: email, password: password);
+          setCurrentUser = currentUser!;
+          notifyListeners();
+        }
+      },
+    );
   }
 
   Future<List<MyAppUser>> getUserList() async {

@@ -1,64 +1,73 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/user_controller.dart';
+import '../model/chat_model.dart';
 import '../model/message_model.dart';
 import '../model/user_model.dart';
 
 class ChatPage extends StatelessWidget {
   final UserController userController;
   final ChatController chatController;
+  final MyAppUser participant;
+  final Chat chat;
   const ChatPage({
     super.key,
     required this.userController,
     required this.chatController,
+    required this.participant,
+    required this.chat,
   });
 
   @override
   Widget build(BuildContext context) {
-    final MyAppUser sender = userController.getCurrentUser!;
-    final MyAppUser receiver = chatController.getReceiver!;
-    Future<String> chatId = chatController.getChatId(sender.id, receiver.id);
-
+    print(chatController.getCurrentChat.id);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Chat with ${sender.name}'),
+        title: Text('Chat with ${participant.name}'),
       ),
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder<List<Message>>(
-              future: chatController.getMessages(chatId as String),
-              builder: (context, snapshot) {
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('chats')
+                  .doc(chatController.getCurrentChat.id)
+                  .collection('messages')
+                  .orderBy('timestamp')
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
-                  final messages = snapshot.data;
+                  List<Message> messages = snapshot.data!.docs
+                      .map((doc) =>
+                          Message.fromMap(doc.data() as Map<String, dynamic>))
+                      .toList(growable: false);
                   return ListView.builder(
-                    itemCount: messages!.length,
+                    itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final isMe = message.senderId == sender.id;
                       return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                          vertical: 10.0,
-                        ),
+                        padding: const EdgeInsets.all(8.0),
                         child: Row(
-                          mainAxisAlignment: isMe
+                          mainAxisAlignment: messages[index].senderId ==
+                                  userController.getCurrentUser!.id
                               ? MainAxisAlignment.end
                               : MainAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(10.0),
                               decoration: BoxDecoration(
-                                color: isMe ? Colors.blue : Colors.grey,
-                                borderRadius: BorderRadius.circular(10.0),
+                                color: messages[index].senderId ==
+                                        userController.getCurrentUser!.id
+                                    ? Colors.blue
+                                    : Colors.grey,
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
+                              padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                message.text,
+                                messages[index].text,
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16.0,
                                 ),
                               ),
                             ),
@@ -67,10 +76,11 @@ class ChatPage extends StatelessWidget {
                       );
                     },
                   );
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
               },
             ),
           ),

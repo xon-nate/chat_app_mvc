@@ -6,123 +6,75 @@ import '../model/message_model.dart';
 import '../model/user_model.dart';
 
 class ChatController extends ChangeNotifier {
-  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference _chatCollection =
       FirebaseFirestore.instance.collection('chats');
 
-  late final MyAppUser receiver;
-  late final MyAppUser sender;
-  String chatId = '';
-  List<Message> messages = [];
+  late Chat currentChat = Chat(id: '', user1Id: '', user2Id: '', messages: []);
 
-  get getReceiver => receiver;
-  get getSender => sender;
-  get getMessages => messages;
-  get getChatId => chatId;
+  get getCurrentChat => currentChat;
+  setCurrentChat(Chat chat) {
+    currentChat = chat;
+    notifyListeners();
+  }
 
-  Future<Chat> getChat(String chatId) async {
-    final snapshot = await _chatCollection.doc(chatId).get();
-    if (snapshot.exists) {
+  Future<Chat> getChat(MyAppUser sender, MyAppUser receiver) async {
+    DocumentSnapshot snapshot = await _chatCollection
+        .where('user1Id', isEqualTo: sender.id)
+        .where('user2Id', isEqualTo: receiver.id)
+        .get()
+        .then((value) => value.docs.first);
+
+    if (!snapshot.exists) {
+      snapshot = await _chatCollection
+          .where('user1Id', isEqualTo: receiver.id)
+          .where('user2Id', isEqualTo: sender.id)
+          .get()
+          .then((value) => value.docs.first);
+      if (!snapshot.exists) {
+        return await createChat(sender.id, receiver.id);
+      }
       return Chat.fromMap(snapshot.data() as Map<String, dynamic>, snapshot.id);
-    } else {
-      final newChatRef = await _chatCollection.add({});
-      final newChatSnapshot = await newChatRef.get();
-      _chatCollection.doc(newChatSnapshot.id).set({
-        'user1Id': sender.id,
-        'user2Id': receiver.id,
-        'messages': [
-          {
-            'senderId': sender.id,
-            'receiverId': receiver.id,
-            'text': 'Hello',
-            'timestamp': DateTime.now(),
-          },
-          {
-            'senderId': receiver.id,
-            'receiverId': sender.id,
-            'text': 'Hi',
-            'timestamp': DateTime.now(),
-          }
-        ],
-      });
-      Chat newChat = Chat.fromMap(
-          newChatSnapshot.data() as Map<String, dynamic>, newChatSnapshot.id);
-      return newChat;
-      //
     }
+    // print(snapshot.data());
+    Chat newChat =
+        Chat.fromMap(snapshot.data() as Map<String, dynamic>, snapshot.id);
+    setCurrentChat(newChat);
+    return newChat;
   }
 
-  Future<List<Message>> getMessagesByChatId(String chatId) async {
-    Future<QuerySnapshot<Map<String, dynamic>>> snapshot = _chatCollection
-        .doc(chatId)
-        .collection('messages')
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .first;
-    await snapshot.then((value) {
-      for (var element in value.docs) {
-        messages.add(Message.fromJson(element.data()));
-      }
+  Stream<QuerySnapshot> getMessages(String chatId) {
+    return _chatCollection.doc(chatId).collection('messages').snapshots();
+  }
+
+  Future<Chat> createChat(String user1Id, String user2Id) async {
+    DocumentReference docRef = await _chatCollection.add({
+      'user1Id': user1Id,
+      'user2Id': user2Id,
+      'messages': [],
     });
-
-    return messages;
-  }
-
-  Future<String> getChatIdFromUsers(String senderId, receiverId) async {
-    final snapshot = await _chatCollection
-        .where('user1Id', isEqualTo: senderId)
-        .where('user2Id', isEqualTo: receiverId)
-        .get();
-    if (snapshot.docs.isNotEmpty) {
-      chatId = snapshot.docs.first.id;
-      return chatId;
-    } else {
-      final snapshot = await _chatCollection
-          .where('user1Id', isEqualTo: receiverId)
-          .where('user2Id', isEqualTo: senderId)
-          .get();
-      if (snapshot.docs.isNotEmpty) {
-        chatId = snapshot.docs.first.id;
-        return chatId;
-      } else {
-        final newChatRef = await _chatCollection.add({});
-        final newChatSnapshot = await newChatRef.get();
-        _chatCollection.doc(newChatSnapshot.id).set({
-          'user1Id': senderId,
-          'user2Id': receiverId,
-          'messages': [
-            {
-              'senderId': senderId,
-              'receiverId': receiverId,
-              'text': 'Hello',
-              'timestamp': DateTime.now(),
-            },
-            {
-              'senderId': receiverId,
-              'receiverId': senderId,
-              'text': 'Hi',
-              'timestamp': DateTime.now(),
-            }
-          ],
-        });
-        chatId = newChatSnapshot.id;
-      }
-      return chatId;
-    }
-  }
-
-  Future<Message> sendMessage(String chatId, String text) async {
-    final message = Message(
-      senderId: sender.id,
-      receiverId: receiver.id,
-      text: text,
-      timestamp: DateTime.now(),
-      id: '',
+    currentChat = Chat(
+      id: docRef.id,
+      user1Id: user1Id,
+      user2Id: user2Id,
+      messages: [
+        Message(
+          // id: '',
+          senderId: user1Id,
+          receiverId: user2Id,
+          text: 'First message from $user1Id',
+          timestamp: DateTime.now(),
+        ),
+        Message(
+          // id: '',
+          senderId: user2Id,
+          receiverId: user1Id,
+          text: 'First response from $user2Id',
+          timestamp: DateTime.now(),
+        ),
+      ],
     );
-    await _chatCollection
-        .doc(chatId)
-        .collection('messages')
-        .add(message.toJson());
-    return message;
+    docRef.set(currentChat.toMap());
+    return currentChat;
   }
 }
