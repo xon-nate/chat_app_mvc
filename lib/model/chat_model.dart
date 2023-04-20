@@ -13,15 +13,12 @@ class Chat {
     required this.messages,
   });
 
-  factory Chat.fromMap(Map<String, dynamic> map, String id) {
+  static Chat fromMap(Map<String, dynamic> map, String id) {
     return Chat(
       id: id,
       user1Id: map['user1Id'],
       user2Id: map['user2Id'],
-      messages: (map['messages'] as List<dynamic>)
-          .map((e) => Message.fromJson(
-              e, DateTime.now().microsecondsSinceEpoch.toString()))
-          .toList(),
+      messages: map['messages'],
     );
   }
 
