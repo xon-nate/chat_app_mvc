@@ -1,5 +1,5 @@
 class Message {
-  late final String id;
+  final String id;
   final String text;
   final String senderId;
   final String receiverId;
@@ -13,13 +13,15 @@ class Message {
     required this.timestamp,
   });
 
-  factory Message.fromJson(Map<String, dynamic> json) {
+  factory Message.fromJson(Map<String, dynamic> json, String id) {
     return Message(
-      id: json['id'],
+      id: id,
       text: json['text'],
       senderId: json['senderId'],
       receiverId: json['receiverId'],
-      timestamp: DateTime.parse(json['createdAt']),
+      timestamp: json['createdAt'] == null
+          ? DateTime.now()
+          : DateTime.parse(json['createdAt']),
     );
   }
 

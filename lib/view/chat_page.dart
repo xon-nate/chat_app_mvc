@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/user_controller.dart';
+import '../model/chat_model.dart';
 import '../model/message_model.dart';
 import '../model/user_model.dart';
 
@@ -18,30 +19,32 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final MyAppUser sender = userController.getCurrentUser!;
     final MyAppUser receiver = chatController.getReceiver!;
-    Future<String> chatId = chatController.getChatId(sender.id, receiver.id);
+    final Chat currentChat = chatController.getChat;
+    // String chatId = chatController.getChatId();
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Chat with ${sender.name}'),
+        title: Text('Chat with ${receiver.name}'),
       ),
       body: Column(
         children: [
           Expanded(
             child: FutureBuilder<List<Message>>(
-              future: chatController.getMessages(chatId as String),
+              future: chatController.getMessagesByChatId(currentChat.id),
               builder: (context, snapshot) {
+                print(snapshot.data);
                 if (snapshot.hasData) {
-                  final messages = snapshot.data;
+                  final List<Message> messages = snapshot.data!;
                   return ListView.builder(
-                    itemCount: messages!.length,
+                    itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final isMe = message.senderId == sender.id;
+                      final Message message = messages[index];
+                      final bool isMe = message.senderId == sender.id;
                       return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10.0,
-                          vertical: 10.0,
+                          vertical: 5.0,
                         ),
                         child: Row(
                           mainAxisAlignment: isMe
@@ -58,7 +61,6 @@ class ChatPage extends StatelessWidget {
                                 message.text,
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16.0,
                                 ),
                               ),
                             ),
