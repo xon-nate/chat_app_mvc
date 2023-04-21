@@ -10,57 +10,82 @@ class ChatController extends ChangeNotifier {
   final CollectionReference _chatCollection =
       FirebaseFirestore.instance.collection('chats');
 
-  late Chat currentChat = Chat(id: '', user1Id: '', user2Id: '', messages: []);
+  // late Chat currentChat = Chat(id: '', user1Id: '', user2Id: '', messages: []);
 
-  get getCurrentChat => currentChat;
+  // get getCurrentChat => currentChat;
+  final String senderId;
+  final String receiverId;
+  String? chatId;
+  bool isChatIdSet = false;
+  ChatController({required this.senderId, required this.receiverId}) {
+    chatId = null;
 
-  // get getChatMessagesStream => currentChat.messages;
-  setCurrentChat(Chat chat) {
-    currentChat = chat;
+    _initialize();
+    print(senderId);
+    print(receiverId);
+    print(chatId);
+  }
+
+  Future<void> _initialize() async {
+    while (chatId == null) {
+      await getChatId();
+    }
+  }
+
+  setChatId(String id) {
+    chatId = id;
     notifyListeners();
   }
 
-  get getChatMessages => currentChat.messages;
-  Stream<QuerySnapshot<Map<String, dynamic>>> getChatMessagesStream(
-      String chatId) {
-    print(_chatCollection
-        .doc(chatId)
-        .collection('messages')
-        .orderBy('timestamp')
-        .snapshots());
-    return _chatCollection
+  Stream<QuerySnapshot> getChatMessagesSnapshot() {
+    print('Chat ID is set to : $chatId');
+
+    Stream<QuerySnapshot> msgs = _chatCollection
         .doc(chatId)
         .collection('messages')
         .orderBy('timestamp')
         .snapshots();
+
+    return msgs;
   }
 
-  Future<Chat> getChat(MyAppUser sender, MyAppUser receiver) async {
+  Stream<List<Message>> getChatMessagesStream() {
+    print('Chat ID is set to : $chatId');
+    getChatId();
+    print('Chat ID is set to : $chatId');
+    Stream<QuerySnapshot<Map<String, dynamic>>> msgs = _chatCollection
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp')
+        .snapshots();
+
+    return msgs.map(
+        (event) => event.docs.map((e) => Message.fromMap(e.data())).toList());
+  }
+
+  Future<void> getChatId() async {
     DocumentSnapshot snapshot = await _chatCollection
-        .where('user1Id', isEqualTo: sender.id)
-        .where('user2Id', isEqualTo: receiver.id)
+        .where('user1Id', isEqualTo: senderId)
+        .where('user2Id', isEqualTo: receiverId)
         .get()
         .then((value) => value.docs.first);
-
     if (!snapshot.exists) {
       snapshot = await _chatCollection
-          .where('user1Id', isEqualTo: receiver.id)
-          .where('user2Id', isEqualTo: sender.id)
+          .where('user1Id', isEqualTo: receiverId)
+          .where('user2Id', isEqualTo: senderId)
           .get()
           .then((value) => value.docs.first);
-      if (!snapshot.exists) {
-        return await createChat(sender.id, receiver.id);
-      }
-      return Chat.fromMap(snapshot.data() as Map<String, dynamic>, snapshot.id);
+      print('getCHATID: ${snapshot.id}');
+      chatId = snapshot.id;
+      notifyListeners();
+      // setChatId(snapshot.id);
     }
-    // print(snapshot.data());
-    Chat newChat =
-        Chat.fromMap(snapshot.data() as Map<String, dynamic>, snapshot.id);
-    setCurrentChat(newChat);
-    return newChat;
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(String chatId) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMessages() {
+    if (chatId == null) {
+      getChatId();
+    }
     var msgs =
         _chatCollection.doc(chatId).collection('messages').orderBy('timestamp');
     print(msgs);
@@ -74,7 +99,7 @@ class ChatController extends ChangeNotifier {
       'user2Id': user2Id,
       'messages': [],
     });
-    currentChat = Chat(
+    Chat currentChat = Chat(
       id: docRef.id,
       user1Id: user1Id,
       user2Id: user2Id,

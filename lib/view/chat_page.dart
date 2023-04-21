@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/user_controller.dart';
@@ -8,23 +9,17 @@ import '../model/message_model.dart';
 import '../model/user_model.dart';
 
 class ChatPage extends StatelessWidget {
-  final UserController userController;
-  final ChatController chatController;
   final MyAppUser participant;
-  final Chat chat;
-  const ChatPage({
+
+  ChatPage({
     super.key,
-    required this.userController,
-    required this.chatController,
     required this.participant,
-    required this.chat,
   });
 
   @override
   Widget build(BuildContext context) {
-    String chatId = chatController.getCurrentChat.id;
-    // print(chatId);
-    List<Message> messages = chatController.getChatMessages;
+    // ChatController chatController = context.read<ChatController>();
+    // String chatId = chatController.getCurrentChat.id;
     // print(messages);
     return Scaffold(
       appBar: AppBar(
@@ -34,30 +29,28 @@ class ChatPage extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: chatController.getChatMessagesStream(chatId),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  print(snapshot.data!.docs);
-                  messages = snapshot.data!.docs
-                      .map((doc) =>
-                          Message.fromMap(doc.data() as Map<String, dynamic>))
-                      .toList();
-                  print(messages[0].text);
-                  return ListView.builder(
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(messages[index].text),
-                      );
-                    },
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+            child: ChangeNotifierProvider(
+              create: (context) => ChatController(
+                senderId: context.read<UserController>().currentUser!.id,
+                receiverId: participant.id,
+              ),
+              child: StreamProvider<List<Message>>(
+                create: (ctext) =>
+                    ctext.read<ChatController>().getChatMessagesStream(),
+                initialData: [],
+                child: Consumer<List<Message>>(
+                  builder: (context, messages, child) {
+                    return ListView.builder(
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(messages[index].text),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
             ),
           ),
           Container(

@@ -18,11 +18,8 @@ Future<void> main() async {
   );
   // Run the app
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserController()),
-        ChangeNotifierProvider(create: (_) => ChatController()),
-      ],
+    ChangeNotifierProvider(
+      create: (context) => UserController(),
       child: MyApp(),
     ),
   );
