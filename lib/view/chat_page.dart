@@ -29,23 +29,30 @@ class ChatPage extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: StreamProvider<List<Message>>(
-              create: (ctext) {
-                return ctext.read<ChatController>().getChatMessagesStream();
-              },
-              initialData: [],
-              child: Consumer<List<Message>>(
-                builder: (context, messages, child) {
-                  print(messages);
-                  return ListView.builder(
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(messages[index].text),
-                      );
-                    },
-                  );
+            child: ChangeNotifierProvider(
+              create: (context) => ChatController(
+                senderId: context.read<UserController>().currentUser!.id,
+                receiverId: participant.id,
+              ),
+              child: StreamProvider<List<Message>>(
+                create: (ctext) {
+                  ctext.read<ChatController>().getChatId();
+                  return ctext.read<ChatController>().getChatMessagesStream();
                 },
+                initialData: [],
+                child: Consumer<List<Message>>(
+                  builder: (context, messages, child) {
+                    print(messages);
+                    return ListView.builder(
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(messages[index].text),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ),

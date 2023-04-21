@@ -54,7 +54,7 @@ class ChatController extends ChangeNotifier {
     print('Chat ID is set to : $chatId');
     getChatId();
     print('Chat ID is set to : $chatId');
-
+    getChatId();
     Stream<QuerySnapshot<Map<String, dynamic>>> msgs = _chatCollection
         .doc(chatId)
         .collection('messages')
