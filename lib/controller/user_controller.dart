@@ -45,7 +45,8 @@ class UserController with ChangeNotifier {
   }
 
   Future<List<MyAppUser>> getUserList() async {
-    QuerySnapshot snapshot = await _firestore.collection('users').get();
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').get();
 
     if (getCurrentUser != null) {
       _userList = snapshot.docs
