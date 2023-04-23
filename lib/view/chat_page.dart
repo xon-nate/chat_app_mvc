@@ -21,60 +21,69 @@ class ChatPage extends StatelessWidget {
     // ChatController chatController = context.read<ChatController>();
     // String chatId = chatController.getCurrentChat.id;
     // print(messages);
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Chat with ${participant.name}'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ChangeNotifierProvider(
-              create: (context) => ChatController(
-                senderId: context.read<UserController>().currentUser!.id,
-                receiverId: participant.id,
-              ),
-              child: StreamProvider<List<Message>>(
-                create: (ctext) {
-                  ctext.read<ChatController>().getChatId();
-                  return ctext.read<ChatController>().getChatMessagesStream();
-                },
-                initialData: [],
-                child: Consumer<List<Message>>(
-                  builder: (context, messages, child) {
-                    print(messages);
-                    return ListView.builder(
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(messages[index].text),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
+
+    return Provider(
+      create: (ctext) {
+        final chatController = ChatController(
+          senderId: ctext.read<UserController>().currentUser!.id,
+          receiverId: participant.id,
+        );
+        chatController.getChatId();
+        return chatController;
+      },
+      builder: (ctext, child) => Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('Chat with ${participant.name}'),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ctext.read<ChatController>().dispose();
+            },
+            icon: const Icon(Icons.arrow_back),
           ),
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Type a message',
+        ),
+        body: Column(
+          children: [
+            Expanded(
+                child: FutureBuilder<String>(
+              future:
+                  Provider.of<ChatController>(ctext, listen: false).getChatId(),
+              builder: (ctext, snapshot) {
+                if (snapshot.hasData ||
+                    snapshot.connectionState == ConnectionState.done) {
+                  print('ASD : Chat ID is set to : ${snapshot.data}');
+                  return Text('SUCCESS: Chat ID is set to : ${snapshot.data}');
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                } else if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  print('waiting for chat id : ${snapshot.data}');
+                  return const CircularProgressIndicator();
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            )),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Type a message',
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.send),
-                ),
-              ],
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.send),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

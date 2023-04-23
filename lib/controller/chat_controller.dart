@@ -16,21 +16,16 @@ class ChatController extends ChangeNotifier {
   // get getCurrentChat => currentChat;
   final String senderId;
   final String receiverId;
-  String? chatId;
+  late String chatId = '';
+  late Future<String> chatIdFuture;
+
   bool isChatIdSet = false;
   ChatController({required this.senderId, required this.receiverId}) {
     _chatCollection = firestore.collection('chats');
     print('Chat Controller initialized: _');
-    // _initialize();
+    chatIdFuture = getChatIdFunc();
     print('CHATCONTROLLER CONSTRUCTOR : $senderId');
     print('CHATCONTROLLER CONSTRUCTOR : $receiverId');
-    print('CHATCONTROLLER CONSTRUCTOR : $chatId');
-
-    _initialize();
-  }
-
-  Future<void> _initialize() async {
-    chatId = await getChatId();
   }
 
   setChatId(String id) {
@@ -50,24 +45,26 @@ class ChatController extends ChangeNotifier {
     return msgs;
   }
 
-  Stream<List<Message>> getChatMessagesStream() {
-    print('Chat ID is set to : $chatId');
-    getChatId();
-    print('Chat ID is set to : $chatId');
-    getChatId();
-    Stream<QuerySnapshot<Map<String, dynamic>>> msgs = _chatCollection
-        .doc(chatId)
-        .collection('messages')
-        .orderBy('timestamp')
-        .snapshots();
-    return msgs.map(
-        (event) => event.docs.map((e) => Message.fromMap(e.data())).toList());
-  }
+  // Stream<List<Message>> getChatMessagesStream() {
+  //   print('Chat ID is set to : $chatId');
+  //   // getChatId();
+  //   print('Chat ID is set to : $chatId');
+  //   // getChatId();
+  //   Stream<QuerySnapshot<Map<String, dynamic>>> msgs = _chatCollection
+  //       .doc(chatId)
+  //       .collection('messages')
+  //       .orderBy('timestamp')
+  //       .snapshots();
+  //   return msgs.map(
+  //       (event) => event.docs.map((e) => Message.fromMap(e.data())).toList());
+  // }
 
-  Future<void> loadSetChatId() async {
-    chatId = await getChatId();
-    notifyListeners();
-  }
+  // Future<void> loadSetChatId() async {
+  // chatId = await getChatId();
+  // notifyListeners();
+  // }
+
+  Future<String> getChatIdFunc() async => await getChatId();
 
   Future<String> getChatId() async {
     final chatDocs = await _chatCollection
@@ -75,14 +72,14 @@ class ChatController extends ChangeNotifier {
         .where('user2Id', isEqualTo: receiverId)
         .limit(1)
         .get();
-
+    QueryDocumentSnapshot<Object?> chatDoc;
     if (chatDocs.docs.isNotEmpty) {
-      final chatDoc = chatDocs.docs.first;
+      chatDoc = chatDocs.docs.first;
       print('found chat id');
-      print(chatDoc.id);
-      chatId = chatDoc.id;
+      // print(chatDoc.id);
       print('CHAT ID IS SET TO : $chatId');
       chatId = chatDoc.id;
+      notifyListeners();
       return chatDoc.id;
     } else {
       final reverseChatDocs = await _chatCollection
@@ -94,25 +91,28 @@ class ChatController extends ChangeNotifier {
       if (reverseChatDocs.docs.isNotEmpty) {
         final chatDoc = reverseChatDocs.docs.first;
         print('found chat id');
-        print(chatDoc.id);
+        // print(chatDoc.id);
         chatId = chatDoc.id;
+        notifyListeners();
         print('CHAT ID IS SET TO : $chatId');
-        chatId = chatDoc.id;
         return chatDoc.id;
-      } else if (reverseChatDocs.docs.isEmpty && chatDocs.docs.isEmpty) {
-        final newChatDocId = await createChat(senderId, receiverId);
+      } else {
+        final chatDoc = await createChat(senderId, receiverId);
         print('created new chat id');
-        print(newChatDocId);
-        chatId = newChatDocId;
+        // print(newChatDocId);
+        chatId = chatDoc.id;
+        notifyListeners();
         print('CHAT ID IS SET TO : $chatId');
-        return newChatDocId;
+        return chatDoc.id;
       }
     }
     notifyListeners();
+    // return chatDocs.docs.first.id;
     return '';
   }
 
-  Future<String> createChat(String user1Id, String user2Id) async {
+  Future<DocumentReference<Object?>> createChat(
+      String user1Id, String user2Id) async {
     final docRef = await _chatCollection.add({
       'user1Id': user1Id,
       'user2Id': user2Id,
@@ -151,6 +151,6 @@ class ChatController extends ChangeNotifier {
       ],
     );
     docRef.set(chat.toMap());
-    return docRef.id;
+    return docRef;
   }
 }
