@@ -31,13 +31,6 @@ class ChatPage extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           title: Text('Chat with ${participant.name}'),
-          // leading: IconButton(
-          //   onPressed: () {
-          //     Navigator.pop(context);
-          //     ctext.read<ChatController>().dispose();
-          //   },
-          //   icon: const Icon(Icons.arrow_back),
-          // ),
         ),
         body: Column(
           children: [
