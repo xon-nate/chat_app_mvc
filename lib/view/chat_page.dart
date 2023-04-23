@@ -11,18 +11,14 @@ import '../model/user_model.dart';
 class ChatPage extends StatelessWidget {
   final MyAppUser participant;
 
-  ChatPage({
+  const ChatPage({
     super.key,
     required this.participant,
   });
 
   @override
   Widget build(BuildContext context) {
-    // ChatController chatController = context.read<ChatController>();
-    // String chatId = chatController.getCurrentChat.id;
-    // print(messages);
-
-    return Provider(
+    return ChangeNotifierProvider(
       create: (ctext) {
         final chatController = ChatController(
           senderId: ctext.read<UserController>().currentUser!.id,
@@ -35,35 +31,36 @@ class ChatPage extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           title: Text('Chat with ${participant.name}'),
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ctext.read<ChatController>().dispose();
-            },
-            icon: const Icon(Icons.arrow_back),
-          ),
+          // leading: IconButton(
+          //   onPressed: () {
+          //     Navigator.pop(context);
+          //     ctext.read<ChatController>().dispose();
+          //   },
+          //   icon: const Icon(Icons.arrow_back),
+          // ),
         ),
         body: Column(
           children: [
             Expanded(
-                child: FutureBuilder<String>(
-              future:
-                  Provider.of<ChatController>(ctext, listen: false).getChatId(),
-              builder: (ctext, snapshot) {
-                if (snapshot.hasData ||
-                    snapshot.connectionState == ConnectionState.done) {
-                  print('ASD : Chat ID is set to : ${snapshot.data}');
-                  return Text('SUCCESS: Chat ID is set to : ${snapshot.data}');
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  print('waiting for chat id : ${snapshot.data}');
-                  return const CircularProgressIndicator();
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
-            )),
+              child: FutureProvider<String>(
+                initialData: '',
+                create: (ctext) => ctext.read<ChatController>().chatIdFuture,
+                builder: (ctext, child) {
+                  final chatId = ctext.watch<String>();
+                  if (chatId == '') {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (chatId.isEmpty) {
+                    return const Center(
+                      child: Text('No chat found'),
+                    );
+                  } else {
+                    return Text(chatId);
+                  }
+                },
+              ),
+            ),
             Container(
               padding: const EdgeInsets.all(8.0),
               child: Row(
