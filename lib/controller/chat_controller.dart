@@ -23,7 +23,7 @@ class ChatController extends ChangeNotifier {
   ChatController({required this.senderId, required this.receiverId}) {
     _chatCollection = firestore.collection('chats');
     print('Chat Controller initialized: _');
-    chatIdFuture = getChatIdFunc();
+    chatIdFuture = getChatId();
     print('CHATCONTROLLER CONSTRUCTOR : $senderId');
     print('CHATCONTROLLER CONSTRUCTOR : $receiverId');
   }
@@ -33,38 +33,11 @@ class ChatController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Stream<QuerySnapshot> getChatMessagesSnapshot() {
-    print('Chat ID is set to : $chatId');
-
-    Stream<QuerySnapshot> msgs = _chatCollection
-        .doc(chatId)
-        .collection('messages')
-        .orderBy('timestamp')
-        .snapshots();
-
-    return msgs;
+  void getChatMessagesSnapshot() {
+    _chatCollection.doc(chatId).get().then((data) {
+      print('data is : ${data.data()}');
+    });
   }
-
-  // Stream<List<Message>> getChatMessagesStream() {
-  //   print('Chat ID is set to : $chatId');
-  //   // getChatId();
-  //   print('Chat ID is set to : $chatId');
-  //   // getChatId();
-  //   Stream<QuerySnapshot<Map<String, dynamic>>> msgs = _chatCollection
-  //       .doc(chatId)
-  //       .collection('messages')
-  //       .orderBy('timestamp')
-  //       .snapshots();
-  //   return msgs.map(
-  //       (event) => event.docs.map((e) => Message.fromMap(e.data())).toList());
-  // }
-
-  // Future<void> loadSetChatId() async {
-  // chatId = await getChatId();
-  // notifyListeners();
-  // }
-
-  Future<String> getChatIdFunc() async => await getChatId();
 
   Future<String> getChatId() async {
     final chatDocs = await _chatCollection
@@ -106,9 +79,10 @@ class ChatController extends ChangeNotifier {
         return chatDoc.id;
       }
     }
-    notifyListeners();
-    // return chatDocs.docs.first.id;
-    return '';
+  }
+
+  Stream<DocumentSnapshot<Object?>?> getChatDoc() {
+    return _chatCollection.doc(chatId).snapshots();
   }
 
   Future<DocumentReference<Object?>> createChat(

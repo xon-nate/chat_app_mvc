@@ -22,6 +22,15 @@ class Message {
     };
   }
 
+  static fromJson(Map<String, dynamic> json) {
+    return Message(
+      senderId: json['senderId'],
+      receiverId: json['receiverId'],
+      text: json['text'],
+      timestamp: (json['timestamp'] as Timestamp).toDate(),
+    );
+  }
+
   factory Message.fromMap(Map<String, dynamic> map) {
     return Message(
       senderId: map['senderId'],

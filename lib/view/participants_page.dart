@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../controller/user_controller.dart';
-import '../controller/chat_controller.dart';
-import '../model/chat_model.dart';
 import '../model/user_model.dart';
-import '../navigator.dart';
 import 'chat_page.dart';
 import 'widgets/dropdown_user_select.dart';
 import 'widgets/modal_text_field.dart';
@@ -31,12 +28,14 @@ class ParticipantsPage extends StatelessWidget {
                 preferredSize: const Size.fromHeight(48.0),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Welcome back ${loggedInUser.name}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  child: FittedBox(
+                    child: Text(
+                      '${loggedInUser.name} Welcome back',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
