@@ -98,6 +98,16 @@ class EmailTextFormField extends StatelessWidget {
         if (!RegExp(AppConstants.emailRegex).hasMatch(value!)) {
           return 'Please a valid email';
         }
+        // if (value == null || value.isEmpty || value.trim() == '') {
+        //   return 'email cannot be empty';
+        // } else if (value.contains('@') == false ||
+        //     value.contains('.') == false) {
+        //   return 'Please enter a valid email';
+        // } else if (value.length < 3) {
+        //   return 'email must be at least 3 characters';
+        // } else if (value.contains('-')) {
+        //   return 'email cannot contain -';
+        // }
         return null;
       },
     );
