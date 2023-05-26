@@ -16,7 +16,7 @@ class MessageFromMe extends StatelessWidget {
         textAlign: TextAlign.right,
       ),
       subtitle: Text(
-        message.timestamp.toString(),
+        '${message.timestamp.year}/${message.timestamp.month}/${message.timestamp.day} at ${message.timestamp.hour}:${message.timestamp.minute}',
         textAlign: TextAlign.right,
       ),
     );
@@ -42,7 +42,7 @@ class MessageToMe extends StatelessWidget {
         textAlign: TextAlign.left,
       ),
       subtitle: Text(
-        message.timestamp.toString(),
+        '${message.timestamp.year}/${message.timestamp.month}/${message.timestamp.day} at ${message.timestamp.hour}:${message.timestamp.minute}',
         textAlign: TextAlign.left,
       ),
     );

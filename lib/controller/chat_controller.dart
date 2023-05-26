@@ -21,6 +21,7 @@ class ChatController extends ChangeNotifier {
 
   late Future<String> chatIdFuture;
   String messageText = '';
+  int itemCount = 0;
 
   bool isChatIdSet = false;
   ChatController({required this.senderId, required this.receiverId}) {
