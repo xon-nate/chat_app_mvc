@@ -60,26 +60,6 @@ The encryption process involves the following steps:
 
 By encrypting the messages, the app ensures that the content of the conversations remains confidential and protected from unauthorized access.
 
-## Controllers
-
-### `UserController`
-
-The `UserController` class is responsible for managing user-related functionalities such as user registration, login, and retrieval of user information. It interacts with Firebase Firestore and Firebase Authentication to perform these operations. The `UserController` provides the following methods:
-
-- `registerUser`: Registers a new user with the provided name, email, and password.
-- `loginUser`: Logs in a user with the provided email and password.
-- `signOut`: Signs out the currently authenticated user.
-- `getUserList`: Retrieves a list of all users registered in the app.
-
-### `ChatController`
-
-The `ChatController` class handles the chat functionalities, including creating new chats, sending and receiving messages, and encrypting/decrypting messages. It interacts with Firebase Firestore to store and retrieve chat data. The key methods in the `ChatController` class are:
-
-- `getChatId`: Retrieves the chat ID for the conversation between two users. If a chat already exists, the existing chat ID is returned. Otherwise, a new chat is created, and its ID is returned.
-- `sendMessage`: Sends a message in the chat. The message is encrypted before being stored in the Firestore database.
-- `createChat`: Creates a new chat between two users in the Firestore database.
-
-
 ## Code Explanation
 The Flutter Chat App follows a modular and organized code structure. Here's an explanation of the key code files and controllers used:
 
