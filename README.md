@@ -9,6 +9,7 @@
 - [Configuration](#configuration)
 - [Folder Structure](#folder-structure)
 - [Encryption](#encryption)
+- [Code Explanation](#code-explanation)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Contributing](#contributing)
@@ -58,13 +59,36 @@ The Flutter Chat App utilizes encryption to ensure the security and privacy of m
 
 By employing encryption, the Flutter Chat App ensures that even if messages are intercepted, they cannot be read without the proper decryption key, providing a high level of security for user communication.
 
+## Code Explanation
+The Flutter Chat App follows a modular and organized code structure. Here's an explanation of the key code files and controllers used:
+
+- `controller/chat_controller.dart`: Manages the logic for handling chat-related operations, such as sending and receiving messages, creating chat rooms, and retrieving chat history.
+
+- `controller/user_controller.dart`: Handles user-related operations, such as user registration, login, logout, and fetching user details.
+
+- `view/chat_page.dart`: Renders the UI for the chat page, displaying the chat conversation, text input field, and send button.
+
+- `view/user_list_page.dart`: Displays the list of users available for chatting and allows users to select a user to start a conversation.
+
+- `model/chat.dart`: Represents a chat room and contains information such as the chat ID, participants, and last message.
+
+- `model/message.dart`: Represents a message and includes details like the sender, content, timestamp, and encrypted flag.
+
+- `model/user.dart`: Represents a user and contains attributes like the user ID, name, and email.
+
+Feel free to explore these files and controllers for a deeper understanding of the app's implementation.
+
 ## Dependencies
-- `flutter`: [Flutter framework](https://flutter.dev/)
-- `firebase_core`: [Firebase Core](https://pub.dev/packages/firebase_core)
-- `cloud_firestore`: [Firebase Cloud Firestore](https://pub.dev/packages/cloud_firestore)
-- `firebase_auth`: [Firebase Authentication](https://pub.dev/packages/firebase_auth)
-- `provider`: [State management](https://pub.dev/packages/provider)
-- `encrypt`: [Encryption and decryption](https://pub.dev/packages/encrypt)
+The Flutter Chat App relies on the following dependencies:
+
+- `flutter`: Flutter SDK, the foundation of the app.
+- `firebase_core`: Firebase Core, for initializing the Firebase services.
+- `cloud_firestore`: Firebase Cloud Firestore, for real-time data synchronization and storage.
+- `firebase_auth`: Firebase Authentication, for user authentication and management.
+- `provider`: State management, for managing app state and data flow.
+- `encrypt`: Encryption and decryption, for implementing secure message communication.
+
+Make sure to check the `pubspec.yaml` file for the exact versions of these dependencies used in the project.
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
@@ -73,4 +97,4 @@ This project is licensed under the [MIT License](LICENSE).
 Contributions are welcome! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
 
 ## Contact
-For any inquiries or feedback, please contact [your-email@example.com](mailto:your-email@example.com).
+For any inquiries or feedback, please contact [xon.nate@gmail.com](mailto:xon.nate@gmail.com) / [aminecj0@gmail.com](mailto:aminecj0@gmail.com).
