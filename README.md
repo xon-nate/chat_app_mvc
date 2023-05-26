@@ -49,15 +49,36 @@ Before running the app, make sure to update the Firebase configuration in the `f
 - `view`: Contains UI components, including pages and widgets.
 
 ## Encryption
-The Flutter Chat App utilizes encryption to ensure the security and privacy of messages exchanged between users. The encryption process involves the following steps:
 
-1. Initialization: When the app is launched, a unique chat ID is generated for each conversation between two users. This chat ID is used as the encryption key.
+The chat messages in this app are encrypted to ensure the privacy and security of user conversations. The encryption process is handled in the `ChatController` class.
 
-2. AES Encryption: The AES (Advanced Encryption Standard) algorithm is used for message encryption. Each message is encrypted using the AES algorithm with the chat ID as the encryption key.
+The encryption process involves the following steps:
 
-3. AES Decryption: When a user receives an encrypted message, the app uses the corresponding chat ID as the decryption key to decrypt the message and display it in its original form.
+1. **Message Encryption**: When a user sends a message, the `encryptMessage` method is called. This method takes the message text and the chat ID as input parameters. It generates an encryption key using the UTF-8 representation of the chat ID and creates an Initialization Vector (IV) of length 16. The AES algorithm is used to encrypt the message text using the encryption key and IV. The resulting encrypted message is returned in Base64 format.
 
-By employing encryption, the Flutter Chat App ensures that even if messages are intercepted, they cannot be read without the proper decryption key, providing a high level of security for user communication.
+2. **Message Decryption**: When a user receives an encrypted message, the `decryptMessage` method is called. This method takes the encrypted message and the chat ID as input parameters. It uses the same encryption key and IV generated from the chat ID to decrypt the message. The AES algorithm is used to decrypt the encrypted message, and the original message text is obtained.
+
+By encrypting the messages, the app ensures that the content of the conversations remains confidential and protected from unauthorized access.
+
+## Controllers
+
+### `UserController`
+
+The `UserController` class is responsible for managing user-related functionalities such as user registration, login, and retrieval of user information. It interacts with Firebase Firestore and Firebase Authentication to perform these operations. The `UserController` provides the following methods:
+
+- `registerUser`: Registers a new user with the provided name, email, and password.
+- `loginUser`: Logs in a user with the provided email and password.
+- `signOut`: Signs out the currently authenticated user.
+- `getUserList`: Retrieves a list of all users registered in the app.
+
+### `ChatController`
+
+The `ChatController` class handles the chat functionalities, including creating new chats, sending and receiving messages, and encrypting/decrypting messages. It interacts with Firebase Firestore to store and retrieve chat data. The key methods in the `ChatController` class are:
+
+- `getChatId`: Retrieves the chat ID for the conversation between two users. If a chat already exists, the existing chat ID is returned. Otherwise, a new chat is created, and its ID is returned.
+- `sendMessage`: Sends a message in the chat. The message is encrypted before being stored in the Firestore database.
+- `createChat`: Creates a new chat between two users in the Firestore database.
+
 
 ## Code Explanation
 The Flutter Chat App follows a modular and organized code structure. Here's an explanation of the key code files and controllers used:
