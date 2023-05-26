@@ -79,6 +79,12 @@ The Flutter Chat App follows a modular and organized code structure. Here's an e
 
 Feel free to explore these files and controllers for a deeper understanding of the app's implementation.
 
+## Screenshots
+![Chat Page](screenshots/chat_page.jpg)
+![Login Page](screenshots/login.jpg)
+![Participants List Page](screenshots/participants_list.jpg)
+![Register Page](screenshots/register.jpg)
+
 ## Dependencies
 The Flutter Chat App relies on the following dependencies:
 
