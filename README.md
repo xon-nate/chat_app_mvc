@@ -83,7 +83,7 @@ Feel free to explore these files and controllers for a deeper understanding of t
 <p align="center">
   <img src="screenshots/login.jpg" alt="Login Page" width="300">
   <img src="screenshots/register.jpg" alt="Register Page" width="300">
-  <img src="screenshots/user_list.jpg" alt="User List Page" width="300">
+  <img src="screenshots/participants_list.jpg" alt="User List Page" width="300">
   <img src="screenshots/chat_page.jpg" alt="Chat Page" width="300">
 </p>
 
